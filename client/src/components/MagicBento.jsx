@@ -30,7 +30,7 @@ const cardData = [
         }}
       >
         <Text fz="xs" tt="uppercase" fw={700} c="white">
-          Monthly goal
+          
         </Text>
         <Text fz="lg" fw={500} c="white" mb="md">
           2560 xp / 3000 xp
@@ -95,21 +95,89 @@ const cardData = [
   },
   {
     color: '#060010',
-    title: 'Automation',
-    description: 'Streamline workflows',
+    title: '',
+    description: '',
     label: 'Efficiency'
   },
   {
     color: '#060010',
-    title: 'Integration',
-    description: 'Connect favorite tools',
-    label: 'Connectivity'
+    title: '',
+    description: '',
+    label: 'Total problems solved',
+    content: (
+      <Card 
+        withBorder 
+        radius="md" 
+        padding="xl" 
+        bg="transparent" 
+        style={{ 
+          border: 'none',
+          transform: 'translateY(-40px)',
+          position: 'relative',
+          zIndex: 1
+        }}
+      >
+        <Text fz="xs" tt="uppercase" fw={700} c="white">
+          
+        </Text>
+        <Text fz="lg" fw={500} c="white" mb="md">
+          156 / 200 solved
+        </Text>
+        <Progress 
+          value={78} 
+          size="xl" 
+          radius="xl"
+          color="violet.5"
+          styles={{
+            root: { backgroundColor: 'rgba(255, 255, 255, 0.1)' },
+            bar: { backgroundImage: 'linear-gradient(90deg, #4C1D95 0%, #8B5CF6 100%)' }
+          }}
+        />
+        <Text c="white" style={{ opacity: 0.7, marginTop: '12px', fontSize: '14px' }}>
+          Keep solving to earn xp
+        </Text>
+      </Card>
+    )
   },
   {
     color: '#060010',
-    title: 'Security',
-    description: 'Enterprise-grade protection',
-    label: 'Protection'
+    title: '',
+    description: '',
+    label: 'Contests participated',
+    content: (
+      <Card 
+        withBorder 
+        radius="md" 
+        padding="xl" 
+        bg="transparent" 
+        style={{ 
+          border: 'none',
+          transform: 'translateY(-40px)',
+          position: 'relative',
+          zIndex: 1
+        }}
+      >
+        <Text fz="xs" tt="uppercase" fw={700} c="white">
+          
+        </Text>
+        <Text fz="lg" fw={500} c="white" mb="md">
+          4 / 10 contests
+        </Text>
+        <Progress 
+          value={40} 
+          size="xl" 
+          radius="xl"
+          color="violet.5"
+          styles={{
+            root: { backgroundColor: 'rgba(255, 255, 255, 0.1)' },
+            bar: { backgroundImage: 'linear-gradient(90deg, #4C1D95 0%, #8B5CF6 100%)' }
+          }}
+        />
+        <Text c="white" style={{ opacity: 0.7, marginTop: '12px', fontSize: '14px' }}>
+          Participate in more contests to earn xp
+        </Text>
+      </Card>
+    )
   }
 ];
 
