@@ -1,6 +1,7 @@
 import { useRef, useEffect, useCallback, useState } from 'react';
 import { gsap } from 'gsap';
 import './MagicBento.css';
+import { Card, Progress, Text } from '@mantine/core';
 
 const DEFAULT_PARTICLE_COUNT = 12;
 const DEFAULT_SPOTLIGHT_RADIUS = 300;
@@ -10,9 +11,40 @@ const MOBILE_BREAKPOINT = 768;
 const cardData = [
   {
     color: '#060010',
-    title: 'Analytics',
-    description: 'Track user behavior',
-    label: 'Insights'
+    title: '',
+    description: '',
+    label: 'Level 6',
+    content: (
+      <Card 
+        withBorder 
+        radius="md" 
+        padding="xl" 
+        bg="transparent" 
+        style={{ 
+          border: 'none',
+          transform: 'translateY(-40px)', // Add this line to move the card up
+          position: 'relative',           // Add this to maintain proper stacking
+          zIndex: 1                       // Add this to ensure card stays above others
+        }}
+      >
+        <Text fz="xs" tt="uppercase" fw={700} c="white">
+          Monthly goal
+        </Text>
+        <Text fz="lg" fw={500} c="white" mb="md">
+          2560 xp / 3000 xp
+        </Text>
+        <Progress 
+          value={85} 
+          size="xl" 
+          radius="xl"
+          color="violet.5"
+          styles={{
+            root: { backgroundColor: 'rgba(255, 255, 255, 0.1)' },
+            bar: { backgroundImage: 'linear-gradient(90deg, #4C1D95 0%, #8B5CF6 100%)' }
+          }}
+        />
+      </Card>
+    )
   },
   {
     color: '#060010',
@@ -528,6 +560,7 @@ const MagicBento = ({
                 <div className="card__content">
                   <h2 className="card__title">{card.title}</h2>
                   <p className="card__description">{card.description}</p>
+                  {card.content}
                 </div>
               </ParticleCard>
             );
@@ -651,6 +684,7 @@ const MagicBento = ({
               <div className="card__content">
                 <h2 className="card__title">{card.title}</h2>
                 <p className="card__description">{card.description}</p>
+                {card.content}
               </div>
             </div>
           );
