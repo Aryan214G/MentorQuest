@@ -15,6 +15,7 @@ import AdminUsers from './pages/admin/Users';
 import AdminBadges from './pages/admin/Badges';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
+import BentoDashboard from './pages/student/BentoDashboard';
 
 // Protected Route Component
 function ProtectedRoute({ children, requiredRole }) {
@@ -41,12 +42,18 @@ function AppRouter() {
   
   return (
     <Routes>
-      <Route path="/login" element={user ? <Navigate to={user.role === 'admin' ? '/admin/dashboard' : '/student/dashboard'} /> : <Login />} />
+      <Route path="/login" element={user ? <Navigate to={user.role === 'admin' ? '/admin/bentoDashboard' : '/student/bentoDashboard'} /> : <Login />} />
       
-      {/* Student Routes */}
+      {/* Student Routes
       <Route path="/student/dashboard" element={
         <ProtectedRoute requiredRole="student">
           <StudentDashboard />
+        </ProtectedRoute>
+      } /> */}
+
+      <Route path="/student/bentoDashboard" element={
+        <ProtectedRoute requiredRole="student">
+          <BentoDashboard />
         </ProtectedRoute>
       } />
       <Route path="/student/questions" element={
@@ -106,6 +113,7 @@ function App() {
       <Router>
         <AuthProvider>
           <AppRouter />
+          {/* Remove the duplicate BentoDashboard render here */}
         </AuthProvider>
       </Router>
     </MantineProvider>

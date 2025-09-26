@@ -10,14 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@mantine/core": "^7.12.2",
-    "@mantine/form": "^7.12.2",
-    "@mantine/hooks": "^7.12.2",
-    "@mantine/notifications": "^7.12.2",
+    "@mantine/core": "^7.17.8",
+    "@mantine/form": "^7.17.8",
+    "@mantine/hooks": "^7.17.8",
+    "@mantine/notifications": "^7.17.8",
     "@mantine/spotlight": "^7.12.2",
     "@monaco-editor/react": "^4.6.0",
+    "@react-oauth/google": "^0.12.2",
     "@tabler/icons-react": "^3.35.0",
-    "axios": "^1.6.2",
+    "axios": "^1.12.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^6.20.1"
