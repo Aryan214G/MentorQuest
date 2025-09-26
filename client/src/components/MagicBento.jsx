@@ -1,7 +1,9 @@
 import { useRef, useEffect, useCallback, useState } from 'react';
 import { gsap } from 'gsap';
 import './MagicBento.css';
-import { Card, Progress, Text } from '@mantine/core';
+import { Card, Progress, Text, Group } from '@mantine/core';
+import { IconAward, IconStar, IconTrophy, IconMedal, IconCrown, IconFlame, 
+         IconRocket, IconHeart, IconBulb } from '@tabler/icons-react';
 
 const DEFAULT_PARTICLE_COUNT = 12;
 const DEFAULT_SPOTLIGHT_RADIUS = 300;
@@ -48,15 +50,48 @@ const cardData = [
   },
   {
     color: '#060010',
-    title: 'Dashboard',
-    description: 'Centralized data view',
-    label: 'Overview'
+    title: '',
+    label: 'Streak',
+    content: (
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <Text fz="xl" fw={700} c="white" style={{ marginBottom: '16px' }}>
+          ⚡ 10
+        </Text>
+        <Text c="white" style={{ opacity: 0.7 }}>
+          Earn xp by maintaining streak
+        </Text>
+      </div>
+    )
   },
   {
     color: '#060010',
-    title: 'Collaboration',
-    description: 'Work together seamlessly',
-    label: 'Teamwork'
+    label: 'Badges',
+    content: (
+      <div style={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        gap: '1.5rem',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
+        <Group gap="xl" justify="center">
+          <IconAward size={28} color="#FFD700" stroke={1.5} />
+          <IconStar size={28} color="#FFD700" stroke={1.5} />
+          <IconTrophy size={28} color="#FFD700" stroke={1.5} />
+        </Group>
+        <Group gap="xl" justify="center">
+          <IconMedal size={28} color="#C0C0C0" stroke={1.5} />
+          <IconCrown size={28} color="#C0C0C0" stroke={1.5} />
+          <IconFlame size={28} color="#C0C0C0" stroke={1.5} />
+        </Group>
+        <Group gap="xl" justify="center">
+          <IconRocket size={28} color="#CD7F32" stroke={1.5} />
+          <IconHeart size={28} color="#CD7F32" stroke={1.5} />
+          <IconBulb size={28} color="#CD7F32" stroke={1.5} />
+        </Group>
+      </div>
+    )
   },
   {
     color: '#060010',
