@@ -7,7 +7,8 @@ const {
   getQuestion,
   submitSolution,
   getProfile,
-  getLeaderboard
+  getLeaderboard,
+  getTags
 } = require('../controllers/userController');
 
 // Student dashboard
@@ -23,5 +24,8 @@ router.get('/profile', protect, getProfile);
 
 // Leaderboard
 router.get('/leaderboard', protect, getLeaderboard);
+
+// Tags
+router.get('/tags', protect, getTags);
 
 module.exports = router;

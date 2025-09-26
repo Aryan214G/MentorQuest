@@ -11,7 +11,6 @@ import {
   TextInput,
   Select,
   Textarea,
-  Modal,
   Table,
   Alert,
   Switch,
@@ -164,15 +163,15 @@ export default function AdminBadges() {
   };
 
   return (
-    <Container size="xl">
+    <Container size="xl" style={{ textAlign: 'center' }}>
       {/* Header */}
-      <Group justify="space-between" mb="xl">
-        <div>
+      <Group justify="center" mb="xl" style={{ flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ textAlign: 'center' }}>
           <Title order={1}>Badge Management</Title>
           <Text c="dimmed">Create and manage achievement badges</Text>
         </div>
         
-        <Group>
+        <Group justify="center" gap="sm" wrap="wrap">
           <Button variant="outline" onClick={() => navigate('/admin/dashboard')}>
             Dashboard
           </Button>
@@ -190,6 +189,107 @@ export default function AdminBadges() {
           </Button>
         </Group>
       </Group>
+
+
+
+      {/* Inline Create/Edit Form */}
+      {modalOpened && (
+        <Card shadow="sm" padding="lg" radius="md" withBorder mt="xl">
+          <Title order={3} mb="lg">
+            {editingBadge ? 'Edit Badge' : 'Create New Badge'}
+          </Title>
+          
+          <form onSubmit={form.onSubmit(handleSubmit)}>
+            <Stack>
+              <TextInput
+                label="Badge Name"
+                placeholder="Enter badge name"
+                required
+                {...form.getInputProps('name')}
+              />
+
+              <Textarea
+                label="Description"
+                placeholder="Enter badge description"
+                required
+                minRows={2}
+                {...form.getInputProps('description')}
+              />
+
+              <TextInput
+                label="Icon (Emoji)"
+                placeholder="🏆"
+                {...form.getInputProps('icon')}
+              />
+
+              <Grid>
+                <Grid.Col span={6}>
+                  <Select
+                    label="Criteria Type"
+                    required
+                    data={[
+                      { value: 'problems_solved', label: 'Problems Solved' },
+                      { value: 'streak', label: 'Streak Days' },
+                      { value: 'contest_participation', label: 'Contest Participation' },
+                      { value: 'daily_activity', label: 'Daily Activity' }
+                    ]}
+                    {...form.getInputProps('criteria.type')}
+                  />
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <TextInput
+                    label="Target Value"
+                    type="number"
+                    required
+                    min={1}
+                    {...form.getInputProps('criteria.value')}
+                  />
+                </Grid.Col>
+              </Grid>
+
+              <Grid>
+                <Grid.Col span={6}>
+                  <Select
+                    label="Timeframe"
+                    required
+                    data={[
+                      { value: 'all_time', label: 'All Time' },
+                      { value: 'daily', label: 'Daily' },
+                      { value: 'weekly', label: 'Weekly' },
+                      { value: 'monthly', label: 'Monthly' }
+                    ]}
+                    {...form.getInputProps('criteria.timeframe')}
+                  />
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <TextInput
+                    label="Points Reward"
+                    type="number"
+                    required
+                    min={1}
+                    {...form.getInputProps('points')}
+                  />
+                </Grid.Col>
+              </Grid>
+
+              <Switch
+                label="Active"
+                description="Whether this badge is currently available to earn"
+                {...form.getInputProps('isActive', { type: 'checkbox' })}
+              />
+
+              <Group justify="flex-end">
+                <Button variant="outline" onClick={() => setModalOpened(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">
+                  {editingBadge ? 'Update Badge' : 'Create Badge'}
+                </Button>
+              </Group>
+            </Stack>
+          </form>
+        </Card>
+      )}
 
       {/* Badges Table */}
       <Card shadow="sm" padding="lg" radius="md" withBorder>
@@ -281,103 +381,6 @@ export default function AdminBadges() {
         )}
       </Card>
 
-      {/* Create/Edit Badge Modal */}
-      <Modal
-        opened={modalOpened}
-        onClose={() => setModalOpened(false)}
-        title={editingBadge ? 'Edit Badge' : 'Create New Badge'}
-        size="lg"
-      >
-        <form onSubmit={form.onSubmit(handleSubmit)}>
-          <Stack>
-            <TextInput
-              label="Badge Name"
-              placeholder="Enter badge name"
-              required
-              {...form.getInputProps('name')}
-            />
-
-            <Textarea
-              label="Description"
-              placeholder="Enter badge description"
-              required
-              minRows={2}
-              {...form.getInputProps('description')}
-            />
-
-            <TextInput
-              label="Icon (Emoji)"
-              placeholder="🏆"
-              {...form.getInputProps('icon')}
-            />
-
-            <Grid>
-              <Grid.Col span={6}>
-                <Select
-                  label="Criteria Type"
-                  required
-                  data={[
-                    { value: 'problems_solved', label: 'Problems Solved' },
-                    { value: 'streak', label: 'Streak Days' },
-                    { value: 'contest_participation', label: 'Contest Participation' },
-                    { value: 'daily_activity', label: 'Daily Activity' }
-                  ]}
-                  {...form.getInputProps('criteria.type')}
-                />
-              </Grid.Col>
-              <Grid.Col span={6}>
-                <TextInput
-                  label="Target Value"
-                  type="number"
-                  required
-                  min={1}
-                  {...form.getInputProps('criteria.value')}
-                />
-              </Grid.Col>
-            </Grid>
-
-            <Grid>
-              <Grid.Col span={6}>
-                <Select
-                  label="Timeframe"
-                  required
-                  data={[
-                    { value: 'all_time', label: 'All Time' },
-                    { value: 'daily', label: 'Daily' },
-                    { value: 'weekly', label: 'Weekly' },
-                    { value: 'monthly', label: 'Monthly' }
-                  ]}
-                  {...form.getInputProps('criteria.timeframe')}
-                />
-              </Grid.Col>
-              <Grid.Col span={6}>
-                <TextInput
-                  label="Points Reward"
-                  type="number"
-                  required
-                  min={1}
-                  {...form.getInputProps('points')}
-                />
-              </Grid.Col>
-            </Grid>
-
-            <Switch
-              label="Active"
-              description="Whether this badge is currently available to earn"
-              {...form.getInputProps('isActive', { type: 'checkbox' })}
-            />
-
-            <Group justify="flex-end">
-              <Button variant="outline" onClick={() => setModalOpened(false)}>
-                Cancel
-              </Button>
-              <Button type="submit">
-                {editingBadge ? 'Update Badge' : 'Create Badge'}
-              </Button>
-            </Group>
-          </Stack>
-        </form>
-      </Modal>
     </Container>
   );
 }

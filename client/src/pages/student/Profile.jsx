@@ -78,46 +78,80 @@ export default function Profile() {
   const { totalSolved, totalAttempted, difficultyBreakdown, topicStats } = statistics || {};
 
   return (
-    <Container size="xl">
+    <Container size="xl" p={{ base: 'xs', sm: 'md' }} style={{ textAlign: 'center' }}>
       {/* Header */}
-      <Group justify="space-between" mb="xl">
-        <Group>
-          <Avatar size={60} radius="xl" src={user?.avatar} />
-          <div>
-            <Title order={1}>{userProfile?.name}</Title>
-            <Text c="dimmed">{userProfile?.email}</Text>
-            <Group gap="xs" mt="xs">
-              <Badge color="blue">{userProfile?.totalPoints || 0} points</Badge>
-              <Badge color="orange">{userProfile?.currentStreak || 0} day streak</Badge>
-            </Group>
-          </div>
+      <Stack gap="md" mb={{ base: 'lg', sm: 'xl' }} align="center">
+        {/* Mobile Header */}
+        <Card shadow="sm" padding="md" radius="md" withBorder hiddenFrom="md">
+          <Group justify="center">
+            <Avatar size={50} radius="xl" src={user?.avatar} />
+            <Stack gap="xs" style={{ flex: 1 }}>
+              <Title order={2} size="h4">{userProfile?.name}</Title>
+              <Text c="dimmed" size="sm">{userProfile?.email}</Text>
+              <Group gap="xs" wrap="wrap">
+                <Badge color="blue" size="sm">{userProfile?.totalPoints || 0} points</Badge>
+                <Badge color="orange" size="sm">{userProfile?.currentStreak || 0} day streak</Badge>
+              </Group>
+            </Stack>
+          </Group>
+        </Card>
+
+        {/* Desktop Header */}
+        <Group justify="space-between" visibleFrom="md">
+          <Group>
+            <Avatar size={60} radius="xl" src={user?.avatar} />
+            <div>
+              <Title order={1}>{userProfile?.name}</Title>
+              <Text c="dimmed">{userProfile?.email}</Text>
+              <Group gap="xs" mt="xs">
+                <Badge color="blue">{userProfile?.totalPoints || 0} points</Badge>
+                <Badge color="orange">{userProfile?.currentStreak || 0} day streak</Badge>
+              </Group>
+            </div>
+          </Group>
+          
+          <Group>
+            <Button variant="outline" onClick={() => navigate('/student/dashboard')}>
+              Dashboard
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/student/questions')}>
+              Questions
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/student/leaderboard')}>
+              Leaderboard
+            </Button>
+            <Button variant="filled" color="red" onClick={handleLogout}>
+              Logout
+            </Button>
+          </Group>
         </Group>
-        
-        <Group>
-          <Button variant="outline" onClick={() => navigate('/student/dashboard')}>
+
+        {/* Mobile Navigation */}
+        <Group hiddenFrom="md" gap="xs" justify="center">
+          <Button variant="outline" size="xs" onClick={() => navigate('/student/dashboard')}>
             Dashboard
           </Button>
-          <Button variant="outline" onClick={() => navigate('/student/questions')}>
+          <Button variant="outline" size="xs" onClick={() => navigate('/student/questions')}>
             Questions
           </Button>
-          <Button variant="outline" onClick={() => navigate('/student/leaderboard')}>
+          <Button variant="outline" size="xs" onClick={() => navigate('/student/leaderboard')}>
             Leaderboard
           </Button>
-          <Button variant="filled" color="red" onClick={handleLogout}>
+          <Button variant="filled" color="red" size="xs" onClick={handleLogout}>
             Logout
           </Button>
         </Group>
-      </Group>
+      </Stack>
 
-      <Grid>
+      <Grid gutter={{ base: 'sm', sm: 'md' }}>
         {/* Statistics Overview */}
         <Grid.Col span={12}>
-          <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }}>
-            <Card shadow="sm" padding="lg" radius="md" withBorder>
+          <SimpleGrid cols={{ base: 2, sm: 2, md: 4 }} spacing={{ base: 'sm', sm: 'md' }}>
+            <Card shadow="sm" padding={{ base: 'md', sm: 'lg' }} radius="md" withBorder>
               <Text size="sm" c="dimmed" tt="uppercase" fw={700}>
                 Problems Solved
               </Text>
-              <Text fw={700} size="xl">
+              <Text fw={700} size={{ base: 'lg', sm: 'xl' }}>
                 {totalSolved || 0}
               </Text>
               <Text size="xs" c="dimmed">

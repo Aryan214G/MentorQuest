@@ -489,3 +489,16 @@ exports.getLeaderboard = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// Get all available tags for filtering
+exports.getTags = async (req, res) => {
+  try {
+    const tags = await Question.distinct('tags', { isActive: true });
+    res.json({ 
+      success: true,
+      data: tags.filter(tag => tag && tag.trim() !== '') // Remove empty tags
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

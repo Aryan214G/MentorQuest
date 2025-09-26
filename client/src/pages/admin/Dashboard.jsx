@@ -55,29 +55,58 @@ export default function AdminDashboard() {
   const { overview, recentActivity, topPerformers, popularQuestions, submissionTrends } = dashboardData || {};
 
   return (
-    <Container size="xl">
+    <Container size="xl" p={{ base: 'xs', sm: 'md' }} style={{ textAlign: 'center' }}>
       {/* Header */}
-      <Group justify="space-between" mb="xl">
-        <div>
-          <Title order={1}>Admin Dashboard</Title>
-          <Text c="dimmed">Welcome back, {user?.name}</Text>
-        </div>
-        
-        <Group>
-          <Button variant="outline" onClick={() => navigate('/admin/questions')}>
-            Manage Questions
+      <Stack gap="md" mb={{ base: 'lg', sm: 'xl' }} align="center">
+        {/* Mobile Header */}
+        <Card shadow="sm" padding="md" radius="md" withBorder hiddenFrom="md">
+          <Group justify="center" align="center" style={{ flexDirection: 'column', gap: '0.5rem' }}>
+            <div style={{ textAlign: 'center' }}>
+              <Title order={2} size="h3">Admin Dashboard</Title>
+              <Text c="dimmed" size="sm">Welcome back, {user?.name}</Text>
+            </div>
+            <Button variant="filled" color="red" size="sm" onClick={handleLogout}>
+              Logout
+            </Button>
+          </Group>
+        </Card>
+
+        {/* Desktop Header */}
+        <Group justify="center" visibleFrom="md" style={{ flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ textAlign: 'center' }}>
+            <Title order={1}>Admin Dashboard</Title>
+            <Text c="dimmed">Welcome back, {user?.name}</Text>
+          </div>
+          
+          <Group>
+            <Button variant="outline" onClick={() => navigate('/admin/questions')}>
+              Manage Questions
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/admin/users')}>
+              Manage Users
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/admin/badges')}>
+              Manage Badges
+            </Button>
+            <Button variant="filled" color="red" onClick={handleLogout}>
+              Logout
+            </Button>
+          </Group>
+        </Group>
+
+        {/* Mobile Navigation */}
+        <Group hiddenFrom="md" gap="xs" justify="center">
+          <Button variant="outline" size="xs" onClick={() => navigate('/admin/questions')}>
+            Questions
           </Button>
-          <Button variant="outline" onClick={() => navigate('/admin/users')}>
-            Manage Users
+          <Button variant="outline" size="xs" onClick={() => navigate('/admin/users')}>
+            Users
           </Button>
-          <Button variant="outline" onClick={() => navigate('/admin/badges')}>
-            Manage Badges
-          </Button>
-          <Button variant="filled" color="red" onClick={handleLogout}>
-            Logout
+          <Button variant="outline" size="xs" onClick={() => navigate('/admin/badges')}>
+            Badges
           </Button>
         </Group>
-      </Group>
+      </Stack>
 
       {/* Overview Stats */}
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} mb="xl">

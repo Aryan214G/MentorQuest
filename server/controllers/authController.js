@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
 const { OAuth2Client } = require('google-auth-library');
+const { createStudentQuestionsForNewUser } = require('../utils/studentQuestionSync');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 exports.register = async (req, res) => {
@@ -10,6 +11,18 @@ exports.register = async (req, res) => {
     if (exists) return res.status(400).json({ message: 'User already exists' });
 
     const user = await User.create({ name, email, password, role });
+    
+    // If the user is a student, sync them with all active questions
+    if (role === 'student') {
+      try {
+        await createStudentQuestionsForNewUser(user._id);
+        console.log(`Synced new student ${user._id} with active questions`);
+      } catch (syncError) {
+        console.error('Error syncing student with questions:', syncError);
+        // Don't fail registration if sync fails, just log it
+      }
+    }
+    
     res.status(201).json({
       _id: user._id,
       name: user.name,
@@ -63,12 +76,26 @@ exports.googleAuth = async (req, res) => {
     const { sub: googleId, email, name, picture } = payload;
 
     let user = await User.findOne({ email });
+    let isNewUser = false;
+    
     if (!user) {
       user = await User.create({ name, email, googleId, avatar: picture });
+      isNewUser = true;
     } else if (!user.googleId) {
       user.googleId = googleId;
       user.avatar = user.avatar || picture;
       await user.save();
+    }
+    
+    // If this is a new student user, sync with active questions
+    if (isNewUser && user.role === 'student') {
+      try {
+        await createStudentQuestionsForNewUser(user._id);
+        console.log(`Synced new Google student ${user._id} with active questions`);
+      } catch (syncError) {
+        console.error('Error syncing Google student with questions:', syncError);
+        // Don't fail login if sync fails, just log it
+      }
     }
 
     res.json({

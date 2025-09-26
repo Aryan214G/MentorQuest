@@ -63,38 +63,35 @@ export default function StudentDashboard() {
   const { user: userStats, questionOfTheDay, todayActivities, recentSubmissions } = dashboardData || {};
 
   return (
-    <Container size="xl">
+    <Container size="xl" px={{ base: 'sm', sm: 'md' }} style={{ textAlign: 'center' }}>
       {/* Header */}
-      <Group justify="space-between" mb="xl">
-        <Group>
-          <Avatar size={50} radius="xl" src={user?.avatar} />
-          <div>
-            <Title order={2}>Welcome back, {user?.name}!</Title>
-            <Text c="dimmed">Ready to solve some problems today?</Text>
+      <Group justify="center" mb={{ base: 'lg', sm: 'xl' }} style={{ flexDirection: 'column', gap: '1rem' }}>
+        <Group justify="center" align="center">
+          <Avatar size={{ base: 40, sm: 50 }} radius="xl" src={user?.avatar} />
+          <div style={{ textAlign: 'center' }}>
+            <Title order={{ base: 3, sm: 2 }} size={{ base: 'h3', sm: 'h2' }}>
+              Welcome back, {user?.name}!
+            </Title>
+            <Text c="dimmed" size={{ base: 'sm', sm: 'md' }}>
+              Ready to solve some problems today?
+            </Text>
           </div>
         </Group>
         
-        <Menu shadow="md" width={200}>
-          <Menu.Target>
-            <ActionIcon variant="outline" size="lg">
-              <span><IconChevronDown /></span>
-            </ActionIcon>
-          </Menu.Target>
-          <Menu.Dropdown>
-            <Menu.Item
-              leftSection={<span><IconUser /></span>}
-              onClick={() => navigate('/student/profile')}
-            >
-              Profile
-            </Menu.Item>
-            <Menu.Item
-              leftSection={<span><IconLogout /></span>}
-              onClick={handleLogout}
-            >
-              Logout
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
+        <Group justify="center" gap="sm" wrap="wrap">
+          <Button variant="outline" onClick={() => navigate('/student/questions')}>
+            Questions
+          </Button>
+          <Button variant="outline" onClick={() => navigate('/student/leaderboard')}>
+            Leaderboard
+          </Button>
+          <Button variant="outline" onClick={() => navigate('/student/profile')}>
+            Profile
+          </Button>
+          <Button variant="filled" color="red" onClick={handleLogout}>
+            Logout
+          </Button>
+        </Group>
       </Group>
 
       <Grid>
@@ -168,12 +165,12 @@ export default function StudentDashboard() {
         </Grid.Col>
 
         {/* Question of the Day */}
-        <Grid.Col span={{ base: 12, md: 8 }}>
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Title order={3} mb="md">
-              <Group>
+        <Grid.Col span={{ base: 12, lg: 8 }}>
+          <Card shadow="sm" padding={{ base: 'md', sm: 'lg' }} radius="md" withBorder>
+            <Title order={{ base: 4, sm: 3 }} mb="md" size={{ base: 'h4', sm: 'h3' }}>
+              <Group gap={{ base: 'xs', sm: 'sm' }}>
                 <span style={{ fontSize: '20px' }}><IconCalendar /></span>
-                Question of the Day
+                <Text size={{ base: 'md', sm: 'lg' }}>Question of the Day</Text>
               </Group>
             </Title>
             
@@ -209,9 +206,9 @@ export default function StudentDashboard() {
         </Grid.Col>
 
         {/* Today's Activity */}
-        <Grid.Col span={{ base: 12, md: 4 }}>
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Title order={4} mb="md">Today's Activity</Title>
+        <Grid.Col span={{ base: 12, lg: 4 }}>
+          <Card shadow="sm" padding={{ base: 'md', sm: 'lg' }} radius="md" withBorder>
+            <Title order={{ base: 5, sm: 4 }} mb="md" size={{ base: 'h5', sm: 'h4' }}>Today's Activity</Title>
             {todayActivities?.length > 0 ? (
               <Timeline active={todayActivities.length}>
                 {todayActivities.map((activity, index) => (

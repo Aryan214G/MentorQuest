@@ -4,6 +4,11 @@ const Badge = require('../models/Badge');
 const Submission = require('../models/Submission');
 const StudentQuestion = require('../models/StudentQuestion');
 const ActivityLog = require('../models/ActivityLog');
+const { 
+  createStudentQuestionForNewQuestion,
+  removeStudentQuestionsForDeactivatedQuestion,
+  syncAllStudentQuestions 
+} = require('../utils/studentQuestionSync');
 
 // Question management
 exports.addQuestion = async (req, res) => {
@@ -28,6 +33,15 @@ exports.addQuestion = async (req, res) => {
       examples: examples || [],
       addedBy: req.user.id,
     });
+    
+    // Sync this new question with all existing students
+    try {
+      await createStudentQuestionForNewQuestion(question._id);
+      console.log(`Synced new question ${question._id} with all students`);
+    } catch (syncError) {
+      console.error('Error syncing new question with students:', syncError);
+      // Don't fail question creation if sync fails, just log it
+    }
     
     // Add new tags to database if they don't exist
     const existingTags = await Question.distinct('tags');
@@ -101,13 +115,33 @@ exports.updateQuestion = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
     
+    // Get the current question to check if isActive is changing
+    const currentQuestion = await Question.findById(id);
+    if (!currentQuestion) {
+      return res.status(404).json({ message: 'Question not found' });
+    }
+    
     const question = await Question.findByIdAndUpdate(id, updates, { 
       new: true, 
       runValidators: true 
     }).populate('addedBy', 'name email');
     
-    if (!question) {
-      return res.status(404).json({ message: 'Question not found' });
+    // Handle isActive changes for student question synchronization
+    if ('isActive' in updates && updates.isActive !== currentQuestion.isActive) {
+      try {
+        if (updates.isActive === true) {
+          // Question was activated - sync with all students
+          await createStudentQuestionForNewQuestion(question._id);
+          console.log(`Synced activated question ${question._id} with all students`);
+        } else if (updates.isActive === false) {
+          // Question was deactivated - remove from student questions
+          await removeStudentQuestionsForDeactivatedQuestion(question._id);
+          console.log(`Removed deactivated question ${question._id} from student questions`);
+        }
+      } catch (syncError) {
+        console.error('Error syncing question activation/deactivation:', syncError);
+        // Don't fail update if sync fails, just log it
+      }
     }
     
     res.json(question);
@@ -470,5 +504,25 @@ exports.getTags = async (req, res) => {
     res.json(tags.sort());
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+// Manual sync utility for admins
+exports.syncStudentQuestions = async (req, res) => {
+  try {
+    console.log('Admin initiated manual sync of student questions');
+    const result = await syncAllStudentQuestions();
+    
+    res.json({
+      success: true,
+      message: 'Student questions synchronized successfully',
+      created: result.created
+    });
+  } catch (err) {
+    console.error('Error in manual student questions sync:', err);
+    res.status(500).json({ 
+      success: false,
+      message: err.message 
+    });
   }
 };

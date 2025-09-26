@@ -182,52 +182,92 @@ int main() {
   const { question, progress, submissions } = questionData;
 
   return (
-    <Container size="xl">
+    <Container size="xl" p={{ base: 'xs', sm: 'md' }} style={{ textAlign: 'center' }}>
       {/* Header */}
-      <Group justify="space-between" mb="xl">
-        <Group>
-          <Button variant="subtle" onClick={() => navigate('/student/questions')}>
-            ← Back to Questions
+      <Stack gap="md" mb={{ base: 'lg', sm: 'xl' }} align="center">
+        {/* Mobile Navigation */}
+        <Group justify="center" hiddenFrom="md" gap="md">
+          <Button 
+            variant="subtle" 
+            size="sm"
+            onClick={() => navigate('/student/questions')}
+          >
+            ← Back
           </Button>
-          <div>
-            <Title order={2}>{question.title}</Title>
-            <Group gap="xs" mt="xs">
-              <Badge color={getDifficultyColor(question.difficulty)}>
+          <Button 
+            variant="filled" 
+            color="red" 
+            size="sm"
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
+        </Group>
+
+        {/* Desktop Header */}
+        <Group justify="space-between" visibleFrom="md">
+          <Group>
+            <Button variant="subtle" onClick={() => navigate('/student/questions')}>
+              ← Back to Questions
+            </Button>
+            <div>
+              <Title order={2}>{question.title}</Title>
+              <Group gap="xs" mt="xs">
+                <Badge color={getDifficultyColor(question.difficulty)}>
+                  {question.difficulty}
+                </Badge>
+                <Badge color="blue">{question.points} points</Badge>
+                {progress?.status && (
+                  <Badge color={progress.status === 'solved' ? 'green' : 'orange'}>
+                    {progress.status.replace('_', ' ')}
+                  </Badge>
+                )}
+              </Group>
+            </div>
+          </Group>
+          
+          <Group>
+            <Button variant="outline" onClick={() => navigate('/student/dashboard')}>
+              Dashboard
+            </Button>
+            <Button variant="filled" color="red" onClick={handleLogout}>
+              Logout
+            </Button>
+          </Group>
+        </Group>
+
+        {/* Mobile Title Section */}
+        <Card shadow="sm" padding="md" radius="md" withBorder hiddenFrom="md">
+          <Stack gap="xs">
+            <Title order={3} size="h4">{question.title}</Title>
+            <Group gap="xs" wrap="wrap">
+              <Badge color={getDifficultyColor(question.difficulty)} size="sm">
                 {question.difficulty}
               </Badge>
-              <Badge color="blue">{question.points} points</Badge>
+              <Badge color="blue" size="sm">{question.points} points</Badge>
               {progress?.status && (
-                <Badge color={progress.status === 'solved' ? 'green' : 'orange'}>
+                <Badge color={progress.status === 'solved' ? 'green' : 'orange'} size="sm">
                   {progress.status.replace('_', ' ')}
                 </Badge>
               )}
             </Group>
-          </div>
-        </Group>
-        
-        <Group>
-          <Button variant="outline" onClick={() => navigate('/student/dashboard')}>
-            Dashboard
-          </Button>
-          <Button variant="filled" color="red" onClick={handleLogout}>
-            Logout
-          </Button>
-        </Group>
-      </Group>
+          </Stack>
+        </Card>
+      </Stack>
 
-      <Grid>
+      <Grid gutter={{ base: 'sm', sm: 'md' }}>
         {/* Question Description */}
         <Grid.Col span={{ base: 12, lg: 6 }}>
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Stack>
-              <Title order={3}>Problem Statement</Title>
-              <Text style={{ whiteSpace: 'pre-wrap' }}>
+          <Card shadow="sm" padding={{ base: 'md', sm: 'lg' }} radius="md" withBorder>
+            <Stack gap={{ base: 'sm', sm: 'md' }}>
+              <Title order={3} size="h3">Problem Statement</Title>
+              <Text style={{ whiteSpace: 'pre-wrap' }} size="md">
                 {question.description}
               </Text>
 
               {question.constraints && (
                 <>
-                  <Title order={4}>Constraints</Title>
+                  <Title order={4} size="h4">Constraints</Title>
                   <Text style={{ whiteSpace: 'pre-wrap' }} size="sm" c="dimmed">
                     {question.constraints}
                   </Text>
@@ -236,14 +276,14 @@ int main() {
 
               {question.examples?.length > 0 && (
                 <>
-                  <Title order={4}>Examples</Title>
+                  <Title order={4} size="h4">Examples</Title>
                   {question.examples.map((example, index) => (
-                    <Paper key={index} p="sm" withBorder>
+                    <Paper key={index} p={{ base: 'xs', sm: 'sm' }} withBorder>
                       <Text fw={500} size="sm">Example {index + 1}:</Text>
-                      <Code block mt="xs">
+                      <Code block mt="xs" style={{ fontSize: '12px' }}>
                         Input: {example.input}
                       </Code>
-                      <Code block mt="xs">
+                      <Code block mt="xs" style={{ fontSize: '12px' }}>
                         Output: {example.output}
                       </Code>
                       {example.explanation && (
@@ -286,21 +326,27 @@ int main() {
 
         {/* Code Editor */}
         <Grid.Col span={{ base: 12, lg: 6 }}>
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Stack>
-              <Group justify="space-between">
-                <Title order={3}>Code Editor</Title>
+          <Card shadow="sm" padding={{ base: 'md', sm: 'lg' }} radius="md" withBorder>
+            <Stack gap={{ base: 'sm', sm: 'md' }}>
+              <Group justify="space-between" align="center" wrap="wrap" gap="sm">
+                <Title order={3} size="h3">Code Editor</Title>
                 <Select
                   value={language}
                   onChange={setLanguage}
                   data={languages}
-                  style={{ width: 150 }}
+                  size="sm"
+                  style={{ width: '100px', minWidth: '100px' }}
                 />
               </Group>
 
-              <div style={{ height: '400px', border: '1px solid #e0e0e0', borderRadius: '8px' }}>
+              <div style={{ 
+                height: '350px', 
+                border: '1px solid #e0e0e0', 
+                borderRadius: '8px',
+                minHeight: '250px'
+              }}>
                 <Editor
-                  height="400px"
+                  height="100%"
                   defaultLanguage={language}
                   language={language}
                   value={code}
@@ -308,17 +354,20 @@ int main() {
                   theme="vs-dark"
                   options={{
                     minimap: { enabled: false },
-                    fontSize: 14,
+                    fontSize: 13,
                     wordWrap: 'on',
-                    automaticLayout: true
+                    automaticLayout: true,
+                    scrollBeyondLastLine: false,
+                    renderLineHighlight: 'none'
                   }}
                 />
               </div>
 
-              <Group>
+              <Group gap="xs">
                 <Button
                   variant="outline"
                   onClick={handleRunCode}
+                  size="sm"
                   style={{ flex: 1 }}
                 >
                   Run Code
@@ -326,6 +375,7 @@ int main() {
                 <Button
                   onClick={handleSubmit}
                   loading={submitting}
+                  size="sm"
                   style={{ flex: 1 }}
                 >
                   Submit Solution

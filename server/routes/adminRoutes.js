@@ -22,7 +22,8 @@ const {
   
   // Dashboard and Analytics
   getDashboard,
-  getTags
+  getTags,
+  syncStudentQuestions
 } = require('../controllers/adminController');
 
 // Dashboard
@@ -48,5 +49,6 @@ router.put('/users/:id', protect, admin, updateUser);
 
 // Utility routes
 router.get('/tags', protect, admin, getTags);
+router.post('/sync-student-questions', protect, admin, syncStudentQuestions);
 
 module.exports = router;

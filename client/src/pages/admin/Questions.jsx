@@ -13,7 +13,6 @@ import {
   Select,
   MultiSelect,
   Textarea,
-  Modal,
   Table,
   ActionIcon,
   Menu,
@@ -74,9 +73,14 @@ export default function AdminQuestions() {
   const fetchTags = async () => {
     try {
       const response = await axios.get('/admin/tags');
-      setAvailableTags(response.data.map(tag => ({ value: tag, label: tag })));
+      // Filter out null/undefined values and ensure all tags are strings
+      const validTags = (response.data || [])
+        .filter(tag => tag != null && typeof tag === 'string' && tag.trim() !== '')
+        .map(tag => ({ value: tag.trim(), label: tag.trim() }));
+      setAvailableTags(validTags);
     } catch (error) {
       console.error('Failed to fetch tags:', error);
+      setAvailableTags([]); // Set empty array on error
     }
   };
 
@@ -114,13 +118,18 @@ export default function AdminQuestions() {
 
   const handleEdit = (question) => {
     setEditingQuestion(question);
+    // Ensure tags are properly formatted and filter out null/undefined values
+    const safeTags = (question.tags || [])
+      .filter(tag => tag != null && typeof tag === 'string' && tag.trim() !== '')
+      .map(tag => tag.trim());
+    
     form.setValues({
-      title: question.title,
-      description: question.description,
+      title: question.title || '',
+      description: question.description || '',
       constraints: question.constraints || '',
-      difficulty: question.difficulty,
-      tags: question.tags || [],
-      points: question.points,
+      difficulty: question.difficulty || 'easy',
+      tags: safeTags,
+      points: question.points || 10,
       examples: question.examples || []
     });
     setModalOpened(true);
@@ -173,15 +182,15 @@ export default function AdminQuestions() {
   };
 
   return (
-    <Container size="xl">
+    <Container size="xl" style={{ textAlign: 'center' }}>
       {/* Header */}
-      <Group justify="space-between" mb="xl">
-        <div>
+      <Group justify="center" mb="xl" style={{ flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ textAlign: 'center' }}>
           <Title order={1}>Question Management</Title>
           <Text c="dimmed">Create and manage coding problems</Text>
         </div>
         
-        <Group>
+        <Group justify="center" gap="sm" wrap="wrap">
           <Button variant="outline" onClick={() => navigate('/admin/dashboard')}>
             Dashboard
           </Button>
@@ -199,6 +208,96 @@ export default function AdminQuestions() {
           </Button>
         </Group>
       </Group>
+
+
+      {/* Inline Create/Edit Form */}
+      {modalOpened && (
+        <Card shadow="sm" padding="lg" radius="md" withBorder mt="xl">
+          <Title order={3} mb="lg">
+            {editingQuestion ? 'Edit Question' : 'Add New Question'}
+          </Title>
+          
+          <form onSubmit={form.onSubmit(handleSubmit)}>
+            <Stack>
+              <TextInput
+                label="Title"
+                placeholder="Enter question title"
+                required
+                {...form.getInputProps('title')}
+              />
+
+              <Textarea
+                label="Description"
+                placeholder="Enter problem description"
+                required
+                minRows={4}
+                {...form.getInputProps('description')}
+              />
+
+              <Textarea
+                label="Constraints"
+                placeholder="Enter constraints (optional)"
+                minRows={2}
+                {...form.getInputProps('constraints')}
+              />
+
+              <Grid>
+                <Grid.Col span={6}>
+                  <Select
+                    label="Difficulty"
+                    required
+                    data={[
+                      { value: 'cakewalk', label: 'Cakewalk' },
+                      { value: 'easy', label: 'Easy' },
+                      { value: 'easy-medium', label: 'Easy-Medium' },
+                      { value: 'medium', label: 'Medium' },
+                      { value: 'hard', label: 'Hard' }
+                    ]}
+                    {...form.getInputProps('difficulty')}
+                  />
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <TextInput
+                    label="Points"
+                    type="number"
+                    required
+                    min={1}
+                    {...form.getInputProps('points')}
+                  />
+                </Grid.Col>
+              </Grid>
+
+              <MultiSelect
+                label="Tags"
+                placeholder="Select or add tags"
+                data={availableTags || []}
+                searchable
+                creatable
+                getCreateLabel={(query) => `+ Add "${query}"`}
+                onCreate={(query) => {
+                  if (query && typeof query === 'string' && query.trim()) {
+                    const cleanQuery = query.trim();
+                    const item = { value: cleanQuery, label: cleanQuery };
+                    setAvailableTags(prev => [...(prev || []), item]);
+                    return item;
+                  }
+                  return null;
+                }}
+                {...form.getInputProps('tags')}
+              />
+
+              <Group justify="flex-end">
+                <Button variant="outline" onClick={() => setModalOpened(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">
+                  {editingQuestion ? 'Update Question' : 'Create Question'}
+                </Button>
+              </Group>
+            </Stack>
+          </form>
+        </Card>
+      )}
 
       {/* Questions Table */}
       <Card shadow="sm" padding="lg" radius="md" withBorder>
@@ -307,89 +406,8 @@ export default function AdminQuestions() {
         )}
       </Card>
 
-      {/* Add/Edit Question Modal */}
-      <Modal
-        opened={modalOpened}
-        onClose={() => setModalOpened(false)}
-        title={editingQuestion ? 'Edit Question' : 'Add New Question'}
-        size="lg"
-      >
-        <form onSubmit={form.onSubmit(handleSubmit)}>
-          <Stack>
-            <TextInput
-              label="Title"
-              placeholder="Enter question title"
-              required
-              {...form.getInputProps('title')}
-            />
 
-            <Textarea
-              label="Description"
-              placeholder="Enter problem description"
-              required
-              minRows={4}
-              {...form.getInputProps('description')}
-            />
 
-            <Textarea
-              label="Constraints"
-              placeholder="Enter constraints (optional)"
-              minRows={2}
-              {...form.getInputProps('constraints')}
-            />
-
-            <Grid>
-              <Grid.Col span={6}>
-                <Select
-                  label="Difficulty"
-                  required
-                  data={[
-                    { value: 'cakewalk', label: 'Cakewalk' },
-                    { value: 'easy', label: 'Easy' },
-                    { value: 'easy-medium', label: 'Easy-Medium' },
-                    { value: 'medium', label: 'Medium' },
-                    { value: 'hard', label: 'Hard' }
-                  ]}
-                  {...form.getInputProps('difficulty')}
-                />
-              </Grid.Col>
-              <Grid.Col span={6}>
-                <TextInput
-                  label="Points"
-                  type="number"
-                  required
-                  min={1}
-                  {...form.getInputProps('points')}
-                />
-              </Grid.Col>
-            </Grid>
-
-            <MultiSelect
-              label="Tags"
-              placeholder="Select or add tags"
-              data={availableTags}
-              searchable
-              creatable
-              getCreateLabel={(query) => `+ Add "${query}"`}
-              onCreate={(query) => {
-                const item = { value: query, label: query };
-                setAvailableTags(prev => [...prev, item]);
-                return item;
-              }}
-              {...form.getInputProps('tags')}
-            />
-
-            <Group justify="flex-end">
-              <Button variant="outline" onClick={() => setModalOpened(false)}>
-                Cancel
-              </Button>
-              <Button type="submit">
-                {editingQuestion ? 'Update Question' : 'Create Question'}
-              </Button>
-            </Group>
-          </Stack>
-        </form>
-      </Modal>
     </Container>
   );
 }

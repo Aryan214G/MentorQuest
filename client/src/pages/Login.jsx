@@ -97,14 +97,29 @@ export default function Login() {
   };
 
   return (
-    <Container size={420} my={40}>
-      <Title ta="center" c="blue">
-        MentorQuest
-      </Title>
-      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-        <Title order={2} ta="center" mb="md">
-          {isLogin ? 'Welcome back!' : 'Create account'}
+    <div style={{ 
+      minHeight: '100vh', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center',
+      padding: '20px',
+      backgroundColor: '#f8f9fa'
+    }}>
+      <Container 
+        size={{ base: 360, sm: 420 }} 
+        style={{ 
+          textAlign: 'center',
+          width: '100%',
+          maxWidth: '420px'
+        }}
+      >
+        <Title ta="center" c="blue" size={{ base: 'h2', sm: 'h1' }} mb={{ base: 'md', sm: 'lg' }}>
+          MentorQuest
         </Title>
+        <Paper withBorder shadow="md" p={{ base: 20, sm: 30 }} radius="md">
+          <Title order={2} ta="center" mb="md">
+            {isLogin ? 'Welcome back!' : 'Create account'}
+          </Title>
 
         <form onSubmit={form.onSubmit(handleSubmit)}>
           <Stack>
@@ -172,5 +187,6 @@ export default function Login() {
         </Group>
       </Paper>
     </Container>
+    </div>
   );
 }

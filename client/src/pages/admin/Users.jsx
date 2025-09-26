@@ -14,7 +14,6 @@ import {
   Avatar,
   Alert,
   Pagination,
-  Modal,
   Paper
 } from '@mantine/core';
 import { useAuth } from '../../context/AuthContext';
@@ -88,15 +87,15 @@ export default function AdminUsers() {
   };
 
   return (
-    <Container size="xl">
+    <Container size="xl" style={{ textAlign: 'center' }}>
       {/* Header */}
-      <Group justify="space-between" mb="xl">
-        <div>
+      <Group justify="center" mb="xl" style={{ flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ textAlign: 'center' }}>
           <Title order={1}>User Management</Title>
           <Text c="dimmed">Monitor and manage student accounts</Text>
         </div>
         
-        <Group>
+        <Group justify="center" gap="sm" wrap="wrap">
           <Button variant="outline" onClick={() => navigate('/admin/dashboard')}>
             Dashboard
           </Button>
@@ -114,7 +113,7 @@ export default function AdminUsers() {
 
       {/* Filters */}
       <Card shadow="sm" padding="lg" radius="md" withBorder mb="xl">
-        <Group>
+        <Group justify="center" gap="md" wrap="wrap">
           <TextInput
             placeholder="Search by name or email"
             value={filters.search}
@@ -159,6 +158,105 @@ export default function AdminUsers() {
           />
         </Group>
       </Card>
+
+
+      {/* Inline User Details */}
+      {userDetailsModal && selectedUser && (
+        <Card shadow="sm" padding="lg" radius="md" withBorder mt="xl">
+          <Group justify="space-between" mb="lg">
+            <Title order={3}>User Details</Title>
+            <Button variant="outline" onClick={() => setUserDetailsModal(false)}>
+              Close
+            </Button>
+          </Group>
+          
+          <Stack>
+            {/* User Info */}
+            <Paper p="md" withBorder>
+              <Group>
+                <Avatar size="lg" radius="xl" src={selectedUser.user?.avatar} />
+                <div>
+                  <Title order={3}>{selectedUser.user?.name}</Title>
+                  <Text c="dimmed">{selectedUser.user?.email}</Text>
+                  <Group gap="xs" mt="xs">
+                    <Badge color={getRoleBadgeColor(selectedUser.user?.role)}>
+                      {selectedUser.user?.role}
+                    </Badge>
+                    <Badge color="blue">{selectedUser.user?.totalPoints || 0} points</Badge>
+                    <Badge color="orange">{selectedUser.user?.currentStreak || 0} day streak</Badge>
+                  </Group>
+                </div>
+              </Group>
+            </Paper>
+
+            {/* Statistics */}
+            <Paper p="md" withBorder>
+              <Title order={4} mb="md">Statistics</Title>
+              <Group>
+                <div>
+                  <Text size="sm" c="dimmed">Problems Solved</Text>
+                  <Text fw={700} size="lg">{selectedUser.statistics?.totalSolved || 0}</Text>
+                </div>
+                <div>
+                  <Text size="sm" c="dimmed">Problems Attempted</Text>
+                  <Text fw={700} size="lg">{selectedUser.statistics?.totalAttempted || 0}</Text>
+                </div>
+                <div>
+                  <Text size="sm" c="dimmed">Max Streak</Text>
+                  <Text fw={700} size="lg">{selectedUser.user?.maxStreak || 0} days</Text>
+                </div>
+                <div>
+                  <Text size="sm" c="dimmed">Badges</Text>
+                  <Text fw={700} size="lg">{selectedUser.user?.badges?.length || 0}</Text>
+                </div>
+              </Group>
+            </Paper>
+
+            {/* Topic Progress */}
+            {selectedUser.statistics?.topicStats?.length > 0 && (
+              <Paper p="md" withBorder>
+                <Title order={4} mb="md">Topic Progress</Title>
+                <Stack gap="xs">
+                  {selectedUser.statistics.topicStats.slice(0, 5).map((topic, index) => (
+                    <Group key={index} justify="space-between">
+                      <Text size="sm">{topic.topic}</Text>
+                      <Text size="sm">
+                        {topic.solvedQuestions}/{topic.totalQuestions} solved
+                      </Text>
+                    </Group>
+                  ))}
+                </Stack>
+              </Paper>
+            )}
+
+            {/* Recent Activity */}
+            {selectedUser.recentActivity?.length > 0 && (
+              <Paper p="md" withBorder>
+                <Title order={4} mb="md">Recent Activity</Title>
+                <Stack gap="xs">
+                  {selectedUser.recentActivity.slice(0, 5).map((activity, index) => (
+                    <Group key={index} justify="space-between">
+                      <div>
+                        <Text size="sm" fw={500}>
+                          {activity.activityType.replace('_', ' ')}
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          {activity.details?.questionId?.title || 
+                           activity.details?.badgeId?.name || 
+                           'System activity'}
+                        </Text>
+                      </div>
+                      <Text size="xs" c="dimmed">
+                        {new Date(activity.activityDate).toLocaleDateString()}
+                      </Text>
+                    </Group>
+                  ))}
+                </Stack>
+              </Paper>
+            )}
+          </Stack>
+        </Card>
+      )}
 
       {/* Users Table */}
       <Card shadow="sm" padding="lg" radius="md" withBorder>
@@ -248,101 +346,7 @@ export default function AdminUsers() {
         )}
       </Card>
 
-      {/* User Details Modal */}
-      <Modal
-        opened={userDetailsModal}
-        onClose={() => setUserDetailsModal(false)}
-        title="User Details"
-        size="lg"
-      >
-        {selectedUser && (
-          <Stack>
-            {/* User Info */}
-            <Paper p="md" withBorder>
-              <Group>
-                <Avatar size="lg" radius="xl" src={selectedUser.user?.avatar} />
-                <div>
-                  <Title order={3}>{selectedUser.user?.name}</Title>
-                  <Text c="dimmed">{selectedUser.user?.email}</Text>
-                  <Group gap="xs" mt="xs">
-                    <Badge color={getRoleBadgeColor(selectedUser.user?.role)}>
-                      {selectedUser.user?.role}
-                    </Badge>
-                    <Badge color="blue">{selectedUser.user?.totalPoints || 0} points</Badge>
-                    <Badge color="orange">{selectedUser.user?.currentStreak || 0} day streak</Badge>
-                  </Group>
-                </div>
-              </Group>
-            </Paper>
 
-            {/* Statistics */}
-            <Paper p="md" withBorder>
-              <Title order={4} mb="md">Statistics</Title>
-              <Group>
-                <div>
-                  <Text size="sm" c="dimmed">Problems Solved</Text>
-                  <Text fw={700} size="lg">{selectedUser.statistics?.totalSolved || 0}</Text>
-                </div>
-                <div>
-                  <Text size="sm" c="dimmed">Problems Attempted</Text>
-                  <Text fw={700} size="lg">{selectedUser.statistics?.totalAttempted || 0}</Text>
-                </div>
-                <div>
-                  <Text size="sm" c="dimmed">Max Streak</Text>
-                  <Text fw={700} size="lg">{selectedUser.user?.maxStreak || 0} days</Text>
-                </div>
-                <div>
-                  <Text size="sm" c="dimmed">Badges</Text>
-                  <Text fw={700} size="lg">{selectedUser.user?.badges?.length || 0}</Text>
-                </div>
-              </Group>
-            </Paper>
-
-            {/* Topic Progress */}
-            {selectedUser.statistics?.topicStats?.length > 0 && (
-              <Paper p="md" withBorder>
-                <Title order={4} mb="md">Topic Progress</Title>
-                <Stack gap="xs">
-                  {selectedUser.statistics.topicStats.slice(0, 5).map((topic, index) => (
-                    <Group key={index} justify="space-between">
-                      <Text size="sm">{topic.topic}</Text>
-                      <Text size="sm">
-                        {topic.solvedQuestions}/{topic.totalQuestions} solved
-                      </Text>
-                    </Group>
-                  ))}
-                </Stack>
-              </Paper>
-            )}
-
-            {/* Recent Activity */}
-            {selectedUser.recentActivity?.length > 0 && (
-              <Paper p="md" withBorder>
-                <Title order={4} mb="md">Recent Activity</Title>
-                <Stack gap="xs">
-                  {selectedUser.recentActivity.slice(0, 5).map((activity, index) => (
-                    <Group key={index} justify="space-between">
-                      <div>
-                        <Text size="sm" fw={500}>
-                          {activity.activityType.replace('_', ' ')}
-                        </Text>
-                        <Text size="xs" c="dimmed">
-                          {activity.details?.questionId?.title || 
-                           activity.details?.badgeId?.name || 
-                           'System activity'}
-                        </Text>
-                      </div>
-                      <Text size="xs" c="dimmed">
-                        {new Date(activity.activityDate).toLocaleDateString()}
-                      </Text>
-                    </Group>
-                  ))}
-                </Stack>
-              </Paper>
-            )}
-          </Stack>
-        )}
-      </Modal>
     </Container>
   );
 }

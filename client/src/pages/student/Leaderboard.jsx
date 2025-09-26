@@ -69,29 +69,58 @@ export default function Leaderboard() {
   const currentUserRank = leaderboard.find(entry => entry._id === user?._id);
 
   return (
-    <Container size="lg">
+    <Container size="lg" p={{ base: 'xs', sm: 'md' }} style={{ textAlign: 'center' }}>
       {/* Header */}
-      <Group justify="space-between" mb="xl">
-        <div>
-          <Title order={1}>🏆 Leaderboard</Title>
-          <Text c="dimmed">See how you rank against other students</Text>
-        </div>
-        
-        <Group>
-          <Button variant="outline" onClick={() => navigate('/student/dashboard')}>
+      <Stack gap="md" mb={{ base: 'lg', sm: 'xl' }} align="center">
+        {/* Mobile Header */}
+        <Card shadow="sm" padding="md" radius="md" withBorder hiddenFrom="md">
+          <Group justify="center" align="center" style={{ flexDirection: 'column', gap: '0.5rem' }}>
+            <div style={{ textAlign: 'center' }}>
+              <Title order={2} size="h3">🏆 Leaderboard</Title>
+              <Text c="dimmed" size="sm">See how you rank</Text>
+            </div>
+            <Button variant="filled" color="red" size="sm" onClick={handleLogout}>
+              Logout
+            </Button>
+          </Group>
+        </Card>
+
+        {/* Desktop Header */}
+        <Group justify="center" visibleFrom="md" style={{ flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ textAlign: 'center' }}>
+            <Title order={1}>🏆 Leaderboard</Title>
+            <Text c="dimmed">See how you rank against other students</Text>
+          </div>
+          
+          <Group>
+            <Button variant="outline" onClick={() => navigate('/student/dashboard')}>
+              Dashboard
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/student/questions')}>
+              Questions
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/student/profile')}>
+              Profile
+            </Button>
+            <Button variant="filled" color="red" onClick={handleLogout}>
+              Logout
+            </Button>
+          </Group>
+        </Group>
+
+        {/* Mobile Navigation */}
+        <Group hiddenFrom="md" gap="xs" justify="center">
+          <Button variant="outline" size="xs" onClick={() => navigate('/student/dashboard')}>
             Dashboard
           </Button>
-          <Button variant="outline" onClick={() => navigate('/student/questions')}>
+          <Button variant="outline" size="xs" onClick={() => navigate('/student/questions')}>
             Questions
           </Button>
-          <Button variant="outline" onClick={() => navigate('/student/profile')}>
+          <Button variant="outline" size="xs" onClick={() => navigate('/student/profile')}>
             Profile
           </Button>
-          <Button variant="filled" color="red" onClick={handleLogout}>
-            Logout
-          </Button>
         </Group>
-      </Group>
+      </Stack>
 
       {/* Current User Stats */}
       {currentUserRank && (
@@ -124,14 +153,15 @@ export default function Leaderboard() {
       )}
 
       {/* Leaderboard */}
-      <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <Title order={3} mb="md">Top Performers</Title>
+      <Card shadow="sm" padding={{ base: 'md', sm: 'lg' }} radius="md" withBorder>
+        <Title order={3} mb="md" size={{ base: 'h4', sm: 'h3' }}>Top Performers</Title>
         
         {loading ? (
           <Alert>Loading leaderboard...</Alert>
         ) : leaderboard.length > 0 ? (
           <>
-            <Table highlightOnHover>
+            {/* Desktop Table */}
+            <Table highlightOnHover visibleFrom="md">
               <Table.Thead>
                 <Table.Tr>
                   <Table.Th>Rank</Table.Th>
@@ -207,6 +237,55 @@ export default function Leaderboard() {
               </Table.Tbody>
             </Table>
 
+            {/* Mobile Cards */}
+            <Stack gap="sm" hiddenFrom="md">
+              {leaderboard.map((entry) => (
+                <Card 
+                  key={entry._id} 
+                  p="md" 
+                  withBorder
+                  style={{
+                    backgroundColor: entry._id === user?._id ? '#f0f9ff' : undefined,
+                    border: entry._id === user?._id ? '2px solid #228be6' : undefined
+                  }}
+                >
+                  <Group justify="space-between" align="center">
+                    <Group>
+                      <div style={{ textAlign: 'center', minWidth: '50px' }}>
+                        <Text fw={700} size="lg">#{entry.rank}</Text>
+                        {entry.rank <= 3 && (
+                          <div style={{ fontSize: '16px' }}>
+                            {getRankIcon(entry.rank)}
+                          </div>
+                        )}
+                      </div>
+                      <Avatar 
+                        size="sm" 
+                        radius="xl" 
+                        src={entry.avatar}
+                      />
+                      <Stack gap="xs" style={{ flex: 1 }}>
+                        <Text fw={500} size="sm" lineClamp={1}>
+                          {entry.name}
+                        </Text>
+                        <Group gap="xs" wrap="wrap">
+                          <Badge color="blue" size="xs">
+                            {entry.totalPoints} pts
+                          </Badge>
+                          <Badge color="orange" size="xs">
+                            🔥 {entry.currentStreak}d
+                          </Badge>
+                          <Badge color="gray" size="xs">
+                            Max: {entry.maxStreak}d
+                          </Badge>
+                        </Group>
+                      </Stack>
+                    </Group>
+                  </Group>
+                </Card>
+              ))}
+            </Stack>
+
             {/* Pagination */}
             {pagination.total > 1 && (
               <Group justify="center" mt="xl">
@@ -214,6 +293,7 @@ export default function Leaderboard() {
                   value={pagination.current}
                   onChange={handlePageChange}
                   total={pagination.total}
+                  size={{ base: 'sm', sm: 'md' }}
                 />
               </Group>
             )}
